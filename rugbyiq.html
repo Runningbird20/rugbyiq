@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RugbyIQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #E63946;
+    --ink: #111827;
+    --ink-mid: #374151;
+    --ink-soft: #6B7280;
+    --line: #E5E7EB;
+    --bg: #F8F9FA;
+    --white: #FFFFFF;
+    --radius: 8px;
+    --transition: 180ms ease;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+  .nav-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.25rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-right: 0.5rem;
+    white-space: nowrap;
+  }
+  .nav-logo span { color: var(--red); }
+  .nav-links { display: flex; gap: 0; flex: 1; }
+  .nav-link {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 0 1rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+    user-select: none;
+  }
+  .nav-link:hover { color: var(--ink); }
+  .nav-link.active { color: var(--red); border-bottom-color: var(--red); }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--red); margin-bottom: 0.75rem;
+  }
+  .hero h1 {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: clamp(2.5rem, 6vw, 4rem); text-transform: uppercase;
+    letter-spacing: 0.02em; line-height: 1; color: var(--ink); margin-bottom: 1rem;
+  }
+  .hero p { font-size: 1rem; color: var(--ink-soft); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+  /* ── TRAINER LAYOUT ── */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    gap: 2rem;
+    align-items: start;
+  }
+  .pitch-card {
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: var(--radius); overflow: hidden;
+    position: sticky; top: 72px;
+  }
+  .pitch-label {
+    padding: 0.75rem 1rem; font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft);
+    border-bottom: 1px solid var(--line); background: var(--bg);
+  }
+  svg.pitch { width: 100%; display: block; cursor: default; }
+  .pos-dot { cursor: pointer; }
+  .pos-dot:hover .dot-circle { filter: brightness(1.15); }
+  .pos-dot.active .dot-circle { fill: var(--red) !important; }
+  .pos-dot.active .dot-ring { stroke: var(--red); opacity: 1; }
+
+  .panel-area { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .pos-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .pos-tab {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 0.35rem 0.75rem; border-radius: 100px;
+    border: 1px solid var(--line); background: var(--white);
+    color: var(--ink-soft); cursor: pointer; transition: all var(--transition);
+  }
+  .pos-tab:hover { border-color: var(--ink-mid); color: var(--ink); }
+  .pos-tab.active { background: var(--red); border-color: var(--red); color: white; }
+
+  .position-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .pos-header { padding: 1.5rem; border-bottom: 1px solid var(--line); display: flex; align-items: flex-start; gap: 1rem; }
+  .pos-number { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 3rem; line-height: 1; color: var(--line); min-width: 3.5rem; text-align: right; user-select: none; }
+  .pos-number.highlighted { color: var(--red); }
+  .pos-group-tag { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 0.2rem; }
+  .pos-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.03em; line-height: 1; color: var(--ink); }
+  .pos-tagline { font-size: 0.85rem; color: var(--ink-soft); margin-top: 0.4rem; line-height: 1.4; }
+  .pos-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .section-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 0.5rem; }
+  .role-pills { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .role-pill { font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.6rem; border-radius: 4px; background: var(--bg); color: var(--ink-mid); border: 1px solid var(--line); }
+  .technique-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .technique-item { display: flex; gap: 0.75rem; align-items: flex-start; font-size: 0.875rem; line-height: 1.5; color: var(--ink-mid); }
+  .technique-item::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--red); margin-top: 0.45rem; flex-shrink: 0; }
+  .radar-wrap { position: relative; width: 100%; max-width: 260px; margin: 0 auto; }
+  .radar-wrap canvas { display: block; width: 100% !important; height: auto !important; }
+  .stat-name { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-top: 0.2rem; }
+
+  .drill-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .drill-header { padding: 1rem 1.25rem; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  .drill-title-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+  .drill-refresh { font-size: 0.75rem; font-weight: 600; color: var(--red); cursor: pointer; border: none; background: none; padding: 0; letter-spacing: 0.05em; text-transform: uppercase; }
+  .drill-refresh:hover { opacity: 0.7; }
+  .drill-body { padding: 1.25rem; }
+  .drill-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink); margin-bottom: 0.4rem; }
+  .drill-desc { font-size: 0.875rem; color: var(--ink-mid); line-height: 1.6; margin-bottom: 0.75rem; }
+  .drill-meta { display: flex; gap: 1rem; }
+  .drill-chip { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+  .drill-chip span { color: var(--ink); }
+
+  .timer-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; display: flex; align-items: center; gap: 1.5rem; }
+  .timer-display { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 2.5rem; color: var(--ink); line-height: 1; min-width: 5rem; }
+  .timer-display.running { color: var(--red); }
+  .timer-controls { display: flex; gap: 0.5rem; }
+  .timer-btn { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--line); background: var(--white); color: var(--ink); cursor: pointer; transition: all var(--transition); }
+  .timer-btn.primary { background: var(--red); border-color: var(--red); color: white; }
+  .timer-btn:hover { opacity: 0.85; }
+  .timer-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin-left: auto; }
+
+  /* ── RULEBOOK PAGE ── */
+  .rb-hero {
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+  .rb-hero h1 {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: clamp(2.2rem, 5vw, 3.5rem); text-transform: uppercase;
+    letter-spacing: 0.02em; line-height: 1; color: var(--ink); margin-bottom: 1rem;
+  }
+  .rb-hero p { font-size: 1rem; color: var(--ink-soft); max-width: 520px; margin: 0 auto; line-height: 1.6; }
+
+  .rb-search-bar {
+    max-width: 900px;
+    margin: 1.5rem auto 0;
+    padding: 0 2rem;
+  }
+  .rb-search-input {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    background: var(--white);
+    outline: none;
+    transition: border-color var(--transition);
+  }
+  .rb-search-input:focus { border-color: var(--red); }
+
+  .rb-main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .rb-region {}
+  .rb-region-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .rb-region-flag { font-size: 1.4rem; line-height: 1; }
+  .rb-region-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+  }
+  .rb-region-count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+
+  .rb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .rb-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .rb-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--line);
+    transition: background var(--transition);
+  }
+  .rb-card:hover { border-color: #d1d5db; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .rb-card:hover::before { background: var(--red); }
+  .rb-card.coming-soon { opacity: 0.6; cursor: default; }
+  .rb-card.coming-soon:hover { border-color: var(--line); box-shadow: none; }
+  .rb-card.coming-soon:hover::before { background: var(--line); }
+
+  .rb-card-league {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .rb-card-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .rb-card-desc {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .rb-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.25rem;
+  }
+  .rb-card-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+  }
+  .rb-card-tag.available { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+  .rb-card-tag.soon { background: var(--bg); color: var(--ink-soft); }
+  .rb-card-tag.variation { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+
+  .rb-region-note {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--red);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .variation-banner {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .variation-banner .vi { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .variation-banner .vt { font-size: 0.82rem; color: #1e3a8a; line-height: 1.5; }
+  .variation-banner .vt strong { font-weight: 600; }
+  .rb-open-icon { font-size: 0.9rem; color: var(--ink-soft); }
+
+  /* ── MODAL ── */
+  .modal-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 640px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .modal-header-text { flex: 1; }
+  .modal-league-tag { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 0.3rem; }
+  .modal-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink); }
+  .modal-close { background: none; border: none; font-size: 1.4rem; color: var(--ink-soft); cursor: pointer; padding: 0; line-height: 1; margin-top: 0.1rem; }
+  .modal-close:hover { color: var(--ink); }
+  .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .placeholder-banner {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .placeholder-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .placeholder-text { font-size: 0.82rem; color: #92400e; line-height: 1.5; }
+  .placeholder-text strong { font-weight: 600; }
+
+  .rb-section-block { display: flex; flex-direction: column; gap: 0.5rem; }
+  .rb-section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.9rem;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink); padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .rb-toc-list { display: flex; flex-direction: column; gap: 0; }
+  .rb-toc-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--bg);
+    font-size: 0.85rem;
+    color: var(--ink-mid);
+    cursor: default;
+  }
+  .rb-toc-item:last-child { border-bottom: none; }
+  .rb-toc-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: var(--ink-soft); margin-right: 0.75rem; font-size: 0.8rem; min-width: 2rem; }
+  .rb-toc-placeholder { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #d97706; background: #fef3c7; padding: 0.15rem 0.4rem; border-radius: 3px; }
+
+  .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg);
+  }
+  .modal-footer-note { font-size: 0.75rem; color: var(--ink-soft); }
+  .modal-btn {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.85rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 0.55rem 1.25rem; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--white); color: var(--ink);
+    cursor: default; opacity: 0.5;
+  }
+
+  /* ── PLACEHOLDER PAGES ── */
+  .ph-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  .ph-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+  }
+  .ph-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .ph-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 5vw, 3rem);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .ph-desc {
+    font-size: 1rem;
+    color: var(--ink-soft);
+    max-width: 480px;
+    line-height: 1.65;
+  }
+  .ph-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+  }
+  .ph-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 480px;
+    text-align: left;
+  }
+  .ph-feature {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .ph-feature-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+  .ph-feature-text {}
+  .ph-feature-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+  }
+  .ph-feature-desc {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .ph-divider {
+    width: 100%;
+    max-width: 480px;
+    border: none;
+    border-top: 1px solid var(--line);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .main-layout { grid-template-columns: 1fr; padding: 1rem; }
+    .pitch-card { position: static; }
+    .hero, .rb-hero { padding: 2rem 1rem 1.5rem; }
+    .rb-main { padding: 1rem; }
+    .rb-search-bar { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Rugby<span>IQ</span></div>
+  <div class="nav-links">
+    <div class="nav-link active" onclick="showPage('trainer')">Position Trainer</div>
+    <div class="nav-link" onclick="showPage('rulebooks')">Rule Books</div>
+    <div class="nav-link" onclick="showPage('compare')">Compare Rules</div>
+    <div class="nav-link" onclick="showPage('signals')">Ref Signals</div>
+    <div class="nav-link" onclick="showPage('ruleofday')">Rule of the Day</div>
+  </div>
+</nav>
+
+<!-- ══════════ PAGE: TRAINER ══════════ -->
+<div class="page active" id="page-trainer">
+  <div class="hero">
+    <div class="hero-eyebrow">Position Guide & Drills</div>
+    <h1>Know Your Role</h1>
+    <p>Select any position on the pitch to explore technique cues, key responsibilities, and a drill to run at your next training session.</p>
+  </div>
+
+  <div class="main-layout">
+    <div class="pitch-card">
+      <div class="pitch-label">Tap a position</div>
+      <svg class="pitch" viewBox="0 0 300 480" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="480" fill="#2D6A4F"/>
+        <rect x="0" y="0" width="300" height="48" fill="#2A6348" opacity="0.5"/>
+        <rect x="0" y="96" width="300" height="48" fill="#2A6348" opacity="0.5"/>
+        <rect x="0" y="192" width="300" height="48" fill="#2A6348" opacity="0.5"/>
+        <rect x="0" y="288" width="300" height="48" fill="#2A6348" opacity="0.5"/>
+        <rect x="0" y="384" width="300" height="48" fill="#2A6348" opacity="0.5"/>
+        <rect x="20" y="20" width="260" height="440" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <line x1="20" y1="240" x2="280" y2="240" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+        <line x1="20" y1="100" x2="280" y2="100" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+        <line x1="20" y1="380" x2="280" y2="380" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+        <line x1="20" y1="28" x2="280" y2="28" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+        <line x1="20" y1="452" x2="280" y2="452" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+        <text x="150" y="235" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="middle" font-family="Inter,sans-serif" font-weight="600">HALFWAY</text>
+        <!-- #1 Loosehead -->
+        <g class="pos-dot" data-pos="0" onclick="selectPos(0)">
+          <circle class="dot-ring" cx="122" cy="290" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="122" cy="290" r="10" fill="white" opacity="0.92"/>
+          <text x="122" y="294" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">1</text>
+        </g>
+        <!-- #2 Hooker -->
+        <g class="pos-dot" data-pos="1" onclick="selectPos(1)">
+          <circle class="dot-ring" cx="150" cy="290" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="150" cy="290" r="10" fill="white" opacity="0.92"/>
+          <text x="150" y="294" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">2</text>
+        </g>
+        <!-- #3 Tighthead -->
+        <g class="pos-dot" data-pos="2" onclick="selectPos(2)">
+          <circle class="dot-ring" cx="178" cy="290" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="178" cy="290" r="10" fill="white" opacity="0.92"/>
+          <text x="178" y="294" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">3</text>
+        </g>
+        <!-- #4 Lock -->
+        <g class="pos-dot" data-pos="3" onclick="selectPos(3)">
+          <circle class="dot-ring" cx="132" cy="310" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="132" cy="310" r="10" fill="white" opacity="0.92"/>
+          <text x="132" y="314" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">4</text>
+        </g>
+        <!-- #5 Lock -->
+        <g class="pos-dot" data-pos="4" onclick="selectPos(4)">
+          <circle class="dot-ring" cx="168" cy="310" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="168" cy="310" r="10" fill="white" opacity="0.92"/>
+          <text x="168" y="314" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">5</text>
+        </g>
+        <!-- #6 Blindside -->
+        <g class="pos-dot" data-pos="5" onclick="selectPos(5)">
+          <circle class="dot-ring" cx="112" cy="328" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="112" cy="328" r="10" fill="white" opacity="0.92"/>
+          <text x="112" y="332" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">6</text>
+        </g>
+        <!-- #7 Openside -->
+        <g class="pos-dot" data-pos="6" onclick="selectPos(6)">
+          <circle class="dot-ring" cx="188" cy="328" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="188" cy="328" r="10" fill="white" opacity="0.92"/>
+          <text x="188" y="332" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">7</text>
+        </g>
+        <!-- #8 Number 8 -->
+        <g class="pos-dot" data-pos="7" onclick="selectPos(7)">
+          <circle class="dot-ring" cx="150" cy="346" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="150" cy="346" r="10" fill="white" opacity="0.92"/>
+          <text x="150" y="350" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">8</text>
+        </g>
+        <!-- #9 Scrum Half -->
+        <g class="pos-dot" data-pos="8" onclick="selectPos(8)">
+          <circle class="dot-ring" cx="150" cy="368" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="150" cy="368" r="10" fill="#e0e8ff" opacity="0.95"/>
+          <text x="150" y="372" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">9</text>
+        </g>
+        <!-- #10 Fly Half -->
+        <g class="pos-dot" data-pos="9" onclick="selectPos(9)">
+          <circle class="dot-ring" cx="118" cy="388" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="118" cy="388" r="10" fill="#e0e8ff" opacity="0.95"/>
+          <text x="118" y="392" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">10</text>
+        </g>
+        <!-- #11 Left Wing -->
+        <g class="pos-dot" data-pos="10" onclick="selectPos(10)">
+          <circle class="dot-ring" cx="55" cy="420" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="55" cy="420" r="10" fill="#e0e8ff" opacity="0.95"/>
+          <text x="55" y="424" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">11</text>
+        </g>
+        <!-- #12 Inside Centre -->
+        <g class="pos-dot" data-pos="11" onclick="selectPos(11)">
+          <circle class="dot-ring" cx="120" cy="412" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="120" cy="412" r="10" fill="#e0e8ff" opacity="0.95"/>
+          <text x="120" y="416" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">12</text>
+        </g>
+        <!-- #13 Outside Centre -->
+        <g class="pos-dot" data-pos="12" onclick="selectPos(12)">
+          <circle class="dot-ring" cx="175" cy="412" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="175" cy="412" r="10" fill="#e0e8ff" opacity="0.95"/>
+          <text x="175" y="416" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">13</text>
+        </g>
+        <!-- #14 Right Wing -->
+        <g class="pos-dot" data-pos="13" onclick="selectPos(13)">
+          <circle class="dot-ring" cx="245" cy="420" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="245" cy="420" r="10" fill="#e0e8ff" opacity="0.95"/>
+          <text x="245" y="424" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">14</text>
+        </g>
+        <!-- #15 Fullback -->
+        <g class="pos-dot" data-pos="14" onclick="selectPos(14)">
+          <circle class="dot-ring" cx="150" cy="440" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"/>
+          <circle class="dot-circle" cx="150" cy="440" r="10" fill="#e0e8ff" opacity="0.95"/>
+          <text x="150" y="444" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="Barlow Condensed,sans-serif">15</text>
+        </g>
+        <circle cx="40" cy="50" r="6" fill="white" opacity="0.9"/>
+        <text x="50" y="54" fill="rgba(255,255,255,0.7)" font-size="7" font-family="Inter,sans-serif">Forwards</text>
+        <circle cx="40" cy="64" r="6" fill="#e0e8ff" opacity="0.9"/>
+        <text x="50" y="68" fill="rgba(255,255,255,0.7)" font-size="7" font-family="Inter,sans-serif">Backs</text>
+      </svg>
+    </div>
+
+    <div class="panel-area">
+      <div class="pos-tabs" id="posTabs"></div>
+      <div class="position-card" id="positionCard">
+        <div class="pos-header">
+          <div class="pos-number highlighted" id="posNum">—</div>
+          <div class="pos-title-block">
+            <div class="pos-group-tag" id="posGroup">Select a position</div>
+            <div class="pos-name" id="posName">Choose from the pitch</div>
+            <div class="pos-tagline" id="posTagline">Tap any player dot on the pitch diagram, or use the tabs above.</div>
+          </div>
+        </div>
+        <div class="pos-body" id="posBody" style="display:none">
+          <div><div class="section-label">Key Responsibilities</div><div class="role-pills" id="posRoles"></div></div>
+          <div><div class="section-label">Technique Cues</div><div class="technique-list" id="posTech"></div></div>
+          <div><div class="section-label">Physical Profile</div><div class="radar-wrap"><canvas id="radarChart" role="img" aria-label="Hexagon radar chart showing physical profile across six attributes"></canvas></div></div>
+        </div>
+      </div>
+      <div class="drill-card" id="drillCard" style="display:none">
+        <div class="drill-header">
+          <div class="drill-title-label">Drill of the Session</div>
+          <button class="drill-refresh" onclick="rotateDrill()">↻ Next Drill</button>
+        </div>
+        <div class="drill-body">
+          <div class="drill-name" id="drillName"></div>
+          <div class="drill-desc" id="drillDesc"></div>
+          <div class="drill-meta">
+            <div class="drill-chip">Sets: <span id="drillSets"></span></div>
+            <div class="drill-chip">Duration: <span id="drillDur"></span></div>
+            <div class="drill-chip">Focus: <span id="drillFocus"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="timer-card" id="timerCard" style="display:none">
+        <div>
+          <div class="section-label" style="margin-bottom:0.25rem">Rest Timer</div>
+          <div class="timer-display" id="timerDisplay">1:30</div>
+        </div>
+        <div class="timer-controls">
+          <button class="timer-btn primary" id="timerStartBtn" onclick="timerToggle()">Start</button>
+          <button class="timer-btn" onclick="timerReset()">Reset</button>
+        </div>
+        <div class="timer-label" id="timerLabel">Ready</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: RULEBOOKS ══════════ -->
+<div class="page" id="page-rulebooks">
+  <div class="rb-hero">
+    <div class="hero-eyebrow">Official Regulations</div>
+    <h1>Rule Books</h1>
+    <p>Select your league or governing body to view the official laws of the game. Covers unions and competitions from North America, Europe, and beyond.</p>
+    <div class="rb-search-bar">
+      <input class="rb-search-input" type="text" placeholder="Search leagues, unions, competitions…" oninput="filterRulebooks(this.value)" />
+    </div>
+  </div>
+
+  <div class="rb-main" id="rbMain"></div>
+</div>
+
+<!-- ══════════ PAGE: COMPARE RULES ══════════ -->
+<div class="page" id="page-compare">
+  <div class="ph-page">
+    <div class="ph-icon">⚖️</div>
+    <div class="ph-eyebrow">Coming Soon</div>
+    <div class="ph-title">Side-by-Side Rule Comparison</div>
+    <div class="ph-desc">Pick any two leagues or governing bodies and see how their regulations stack up on a specific topic — scrum laws, eligibility, match duration, disciplinary codes, and more.</div>
+    <div class="ph-badge">🚧 Placeholder</div>
+    <hr class="ph-divider"/>
+    <div class="ph-features">
+      <div class="ph-feature">
+        <div class="ph-feature-icon">🔍</div>
+        <div class="ph-feature-text">
+          <div class="ph-feature-title">Topic Picker</div>
+          <div class="ph-feature-desc">Select a rule category — scrums, lineouts, substitutions, scoring — and instantly pull the relevant section from each league's regulations.</div>
+        </div>
+      </div>
+      <div class="ph-feature">
+        <div class="ph-feature-icon">🗂️</div>
+        <div class="ph-feature-text">
+          <div class="ph-feature-title">League Selector</div>
+          <div class="ph-feature-desc">Choose from any two of the leagues in the Rule Books library — men's, women's, domestic, or international — for a direct comparison.</div>
+        </div>
+      </div>
+      <div class="ph-feature">
+        <div class="ph-feature-icon">🔔</div>
+        <div class="ph-feature-text">
+          <div class="ph-feature-title">Difference Highlights</div>
+          <div class="ph-feature-desc">Key divergences are flagged automatically so you can focus on what actually differs, not what's the same across every union.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: REF SIGNALS ══════════ -->
+<div class="page" id="page-signals">
+  <div class="ph-page">
+    <div class="ph-icon">🟨</div>
+    <div class="ph-eyebrow">Coming Soon</div>
+    <div class="ph-title">Referee Signal Glossary</div>
+    <div class="ph-desc">Every official World Rugby referee hand signal, illustrated and explained. Tap any signal to see the corresponding law, when it's used, and what players should do next.</div>
+    <div class="ph-badge">🚧 Placeholder</div>
+    <hr class="ph-divider"/>
+    <div class="ph-features">
+      <div class="ph-feature">
+        <div class="ph-feature-icon">🖐️</div>
+        <div class="ph-feature-text">
+          <div class="ph-feature-title">All 30+ Signals</div>
+          <div class="ph-feature-desc">Full coverage from try awarded and penalty to knock-on, scrum infringements, lineout calls, and sin bin — every signal a referee makes on the pitch.</div>
+        </div>
+      </div>
+      <div class="ph-feature">
+        <div class="ph-feature-icon">🔗</div>
+        <div class="ph-feature-text">
+          <div class="ph-feature-title">Linked to the Laws</div>
+          <div class="ph-feature-desc">Each signal links directly to the relevant World Rugby law so you can read the full rule context, not just the gesture.</div>
+        </div>
+      </div>
+      <div class="ph-feature">
+        <div class="ph-feature-icon">🔎</div>
+        <div class="ph-feature-text">
+          <div class="ph-feature-title">Searchable & Filterable</div>
+          <div class="ph-feature-desc">Search by signal name, law number, or situation. Filter by phase of play — set piece, open play, disciplinary — to find what you need fast.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: RULE OF THE DAY ══════════ -->
+<div class="page" id="page-ruleofday">
+  <div class="ph-page">
+    <div class="ph-icon">📖</div>
+    <div class="ph-eyebrow">Coming Soon</div>
+    <div class="ph-title">Rule of the Day</div>
+    <div class="ph-desc">One law, every day. Surface an obscure, commonly misunderstood, or often-debated rule each visit — with a plain-English explanation and the official law reference.</div>
+    <div class="ph-badge">🚧 Placeholder</div>
+    <hr class="ph-divider"/>
+    <div class="ph-features">
+      <div class="ph-feature">
+        <div class="ph-feature-icon">🎲</div>
+        <div class="ph-feature-text">
+          <div class="ph-feature-title">Daily Rotation</div>
+          <div class="ph-feature-desc">A new rule surfaces each day, drawn from a curated bank of laws worth knowing — from the obvious to the ones that always start arguments on the pitch.</div>
+        </div>
+      </div>
+      <div class="ph-feature">
+        <div class="ph-feature-icon">💬</div>
+        <div class="ph-feature-text">
+          <div class="ph-feature-title">Plain English First</div>
+          <div class="ph-feature-desc">Every rule is explained in plain language before the official text — so players and coaches actually understand it, not just referees.</div>
+        </div>
+      </div>
+      <div class="ph-feature">
+        <div class="ph-feature-icon">📌</div>
+        <div class="ph-feature-text">
+          <div class="ph-feature-title">Save & Share</div>
+          <div class="ph-feature-desc">Bookmark rules you want to remember or share them with teammates — useful for coaches who want to highlight a law before a match.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL ══════════ -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-league-tag" id="modalLeagueTag"></div>
+        <div class="modal-title" id="modalTitle"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="placeholder-banner">
+        <div class="placeholder-icon">📋</div>
+        <div class="placeholder-text">
+          <strong>Placeholder content</strong> — The full rulebook PDF for this league will be embedded here. When live, users will be able to read, search, and bookmark sections directly in-app.
+        </div>
+      </div>
+      <div class="rb-section-block">
+        <div class="rb-section-title">Table of Contents</div>
+        <div class="rb-toc-list" id="modalToc"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-footer-note">PDF embed coming soon</div>
+      <button class="modal-btn">Open Full PDF ↗</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ PAGE NAV ══ */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelector(`.nav-link[onclick="showPage('${id}')"]`).classList.add('active');
+}
+
+/* ══ RULEBOOK DATA ══ */
+const rulebookRegions = [
+  {
+    region: "North America",
+    flag: "🌎",
+    books: [
+      { league: "USA Rugby", name: "USA Rugby Laws of the Game", desc: "The official playing laws adopted by USA Rugby for all senior union competitions, including collegiate and club rugby.", tag: "Union", toc: ["The Ground","The Ball","Number of Players","Players' Equipment","Toss","Time","Scoring","Offside and Onside","Knock-on or Throw Forward","Kickoff","Lineout","Ruck","Maul","Scrum","Penalty & Free Kicks","In Goal"], available: false },
+      { league: "NCR", name: "National Collegiate Rugby Rulebook", desc: "Governing rules for all NCR-sanctioned college 15s and 7s competitions across the United States.", tag: "Collegiate", toc: ["Eligibility Rules","Match Day Regulations","Scrum Laws (Collegiate)","Lineout Variations","Disciplinary Code","Player Safety Protocols","Game Management","Competition Format"], available: false },
+      { league: "USA Rugby 7s", name: "Sevens Competition Regulations", desc: "Abbreviated laws and tournament regulations specific to USA Rugby's sanctioned sevens circuit.", tag: "7s", toc: ["Match Duration","Team Size & Substitutions","Scoring in 7s","Scrum (7s)","Lineout (7s)","Kickoff After Score","Tournament Format","Sin Bin Rules"], available: false },
+      { league: "Rugby Canada", name: "Rugby Canada Laws & Regulations", desc: "Official regulations governing all Rugby Canada national and provincial competitions.", tag: "Union", toc: ["National Program Laws","Player Registration","Competition Rules","Disciplinary Regulations","Anti-Doping Policy","Referee Appointments","Match Officials"], available: false },
+      { league: "MLR", name: "Major League Rugby Competition Rules", desc: "Professional competition regulations for Major League Rugby, the top tier of rugby union in North America.", tag: "Professional", toc: ["Franchise Regulations","Roster Rules","Salary Cap","Match Procedures","Referee Protocols","Disciplinary Hearings","Playoff Format","Broadcast Standards"], available: false },
+    ]
+  },
+  {
+    region: "Europe",
+    flag: "🌍",
+    books: [
+      { league: "World Rugby", name: "World Rugby Laws of the Game", desc: "The globally binding laws of rugby union, maintained and updated by World Rugby. The foundation for all other union laws.", tag: "Global", toc: ["The Ground","The Ball","Number of Players","Players' Equipment","Toss","Time","Scoring","Offside and Onside","Knock-on or Throw Forward","Kickoff","Lineout","Ruck","Maul","Scrum","Penalty & Free Kicks","In Goal","Foul Play"], available: false },
+      { league: "Premiership Rugby", name: "Premiership Rugby Regulations", desc: "Competition and club regulations for England's top-tier professional rugby union competition.", tag: "Professional", toc: ["Club Licensing","Player Contracts","Salary Cap","Match Day Operations","Disciplinary Panel","Anti-Doping","Media Rights","Promotion & Relegation"], available: false },
+      { league: "RFU", name: "Rugby Football Union Handbook", desc: "The comprehensive rulebook governing all levels of rugby union in England, from grassroots to the elite game.", tag: "Union", toc: ["Playing Laws","Club Registration","Eligibility","Disciplinary Regulations","RFU Competitions","Referee Regulations","Medical & Safety","Financial Regulations"], available: false },
+      { league: "PRO14 / URC", name: "United Rugby Championship Rules", desc: "Regulations for the cross-border United Rugby Championship featuring clubs from Ireland, Scotland, Wales, Italy, and South Africa.", tag: "Professional", toc: ["Competition Format","Club Eligibility","Player Eligibility","Point Scoring System","Playoff Regulations","Disciplinary Code","Match Officials","Broadcast & Commercial"], available: false },
+      { league: "Champions Cup", name: "EPCR Champions Cup Regulations", desc: "Official regulations for the Heineken Champions Cup, European club rugby's premier competition.", tag: "European Cup", toc: ["Entry Criteria","Pool Stage Format","Knockout Rounds","Player Eligibility","Anti-Doping","Disciplinary Hearings","Financial Fair Play","Match Procedures"], available: false },
+      { league: "FFR", name: "Fédération Française de Rugby Règlement", desc: "Official playing and competition regulations from the French Rugby Federation, governing Top 14 and Pro D2.", tag: "Union", toc: ["Règles du Jeu","Règlements des Compétitions","Top 14 Règlement","Pro D2 Règlement","Règles Disciplinaires","Anti-Dopage","Règles des Arbitres","Licences Joueurs"], available: false },
+      { league: "WRU", name: "Welsh Rugby Union Laws & Governance", desc: "Governing rules and competition regulations set by the Welsh Rugby Union for all levels of Welsh rugby.", tag: "Union", toc: ["Laws of the Game","Club Governance","Competition Rules","Premiership Regulations","Player Eligibility","Disciplinary Code","Referee Appointments","Youth Rugby Safeguarding"], available: false },
+      { league: "SRU", name: "Scottish Rugby Union Regulations", desc: "Official rules and competition structures for all Scottish Rugby Union sanctioned competition.", tag: "Union", toc: ["Playing Laws","Club Registration","League Structures","Cup Competitions","Disciplinary Regulations","Anti-Doping","Player Welfare","Academy Regulations"], available: false },
+    ]
+  },
+  {
+    region: "Southern Hemisphere & International",
+    flag: "🌏",
+    books: [
+      { league: "Super Rugby", name: "Super Rugby Competition Rules", desc: "Tournament regulations governing Super Rugby Pacific, the premier professional club competition in the southern hemisphere.", tag: "Professional", toc: ["Competition Format","Franchise Rules","Player Eligibility","Bonus Point System","Playoff Structure","Disciplinary Panel","Financial Regulations","Broadcast Standards"], available: false },
+      { league: "SARU", name: "SA Rugby Union Handbook", desc: "Official laws and competition regulations from the South African Rugby Union, covering the Currie Cup and provincial competitions.", tag: "Union", toc: ["Laws of the Game","Currie Cup Regulations","Club Rugby","Player Registration","Disciplinary Code","Anti-Doping","Referee Development","Youth Rugby"], available: false },
+      { league: "Rugby Australia", name: "Rugby Australia Playing Regulations", desc: "Official regulations from Rugby Australia governing domestic competitions including Super Rugby, NRC, and grassroots levels.", tag: "Union", toc: ["Playing Laws","NRC Regulations","Club Competition Rules","Player Eligibility","Disciplinary Code","Anti-Doping","Referee Appointments","Player Welfare"], available: false },
+      { league: "NZR", name: "New Zealand Rugby Regulations", desc: "Official rules from New Zealand Rugby governing all levels of the game, from the All Blacks to community club rugby.", tag: "Union", toc: ["Playing Laws","NPC Regulations","Club Competition Rules","Player Pathways","Disciplinary Code","High Performance Rules","Community Rugby","Youth & Junior Laws"], available: false },
+    ]
+  },
+  {
+    region: "Women's Competitions",
+    flag: "♀",
+    note: "Women's rugby union is played under the same World Rugby Laws of the Game as the men's game — same pitch, same ball, same scoring. What differs are competition-specific regulations (eligibility, roster rules, tournament format) and, at some domestic levels, approved law variations to reflect the structure of the women's game.",
+    books: [
+      { league: "World Rugby", name: "WXV Competition Regulations", desc: "Official regulations for WXV, World Rugby's three-tier annual global women's 15s competition (WXV 1, WXV 2, WXV 3), launched in 2023 as the centrepiece of the international women's calendar.", tag: "International", lawVariation: false, toc: ["Competition Structure & Tiers","Qualification Pathways","Pool & Cross-Pool Format","Player Eligibility","Promotion & Relegation Rules","Disciplinary Code","Anti-Doping","RWC Qualification Link"], available: false },
+      { league: "Women's Six Nations", name: "Women's Six Nations Regulations", desc: "Competition regulations for the annual women's Six Nations Championship, featuring England, France, Ireland, Italy, Scotland, and Wales. A key WXV qualification route.", tag: "International", lawVariation: false, toc: ["Participating Unions","Competition Format","Points & Standings","Player Eligibility","Disciplinary Regulations","Broadcast & Media","WXV Qualification","Match Officials"], available: false },
+      { league: "Women's RWC", name: "Women's Rugby World Cup Regulations", desc: "Official tournament regulations for the Women's Rugby World Cup, organised by World Rugby. The 2025 edition features an expanded 16-team format in England.", tag: "International", lawVariation: false, toc: ["Tournament Format","Qualification Criteria","Player Eligibility","Team Regulations","Match Procedures","Disciplinary Panel","Anti-Doping","Media & Commercial"], available: false },
+      { league: "Allianz Premier 15s", name: "Premier 15s Competition Regulations", desc: "England's top-tier women's club competition, run by the RFU. Includes law variations approved by World Rugby for the women's domestic game — notably adapted scrum and maul rules at certain competition levels.", tag: "Club · England", lawVariation: true, toc: ["Competition Format","Club Licensing","Player Registration","Salary Cap","Law Variations (Women's)","Disciplinary Code","Anti-Doping","Promotion & Relegation"], available: false },
+      { league: "RFU Women's", name: "RFU Women's Law Variations", desc: "RFU-specific law variations approved by World Rugby and applied across different levels of the women's league pyramid in England. Variations differ between elite and community levels.", tag: "Union · England", lawVariation: true, toc: ["Variation Overview by Level","Scrum Adaptations","Lineout Variations","Maul Regulations","Contact Laws","Player Welfare Protocols","Community Game Variations","Referee Guidance"], available: false },
+      { league: "USA Rugby Women's", name: "USA Rugby Women's Division Regulations", desc: "Competition eligibility and regulations for the USA Rugby Women's Division, including the Eagle Impact Team Series and collegiate women's competition. Note: USA Rugby now operates three divisions — Men's, Women's, and Open.", tag: "Union · USA", lawVariation: false, toc: ["Women's Division Eligibility","Competition Structure","EITS Regulations","Collegiate Rules","Disciplinary Code","Anti-Doping","Player Registration","Open Division Rules"], available: false },
+      { league: "NCR Women's", name: "NCR Women's Collegiate Regulations", desc: "Governing rules for women's collegiate rugby under the National Collegiate Rugby banner, covering 15s and 7s competitions at the college level across the United States.", tag: "Collegiate · USA", lawVariation: false, toc: ["Eligibility Rules","Season Structure","Match Day Regulations","Scrum Laws","Disciplinary Code","Player Safety Protocols","Game Management","Competition Format"], available: false },
+      { league: "Super W", name: "Super W Competition Regulations", desc: "Competition regulations for Super W, the premier women's club rugby competition in Australia, run by Rugby Australia and featuring state-based franchises.", tag: "Club · Australia", lawVariation: false, toc: ["Competition Format","Franchise Eligibility","Player Eligibility","Bonus Point System","Finals Structure","Disciplinary Panel","Player Welfare","Broadcast Standards"], available: false },
+      { league: "Farah Palmer Cup", name: "Farah Palmer Cup Regulations", desc: "Official regulations for New Zealand Rugby's provincial women's 15s competition, the primary domestic women's competition in New Zealand.", tag: "Provincial · NZ", lawVariation: false, toc: ["Competition Format","Provincial Union Eligibility","Player Registration","Points System","Finals Regulations","Disciplinary Code","Player Welfare","Referee Appointments"], available: false },
+      { league: "Women's URC", name: "United Rugby Championship Women's Regs", desc: "Developing regulations for women's competition within the URC framework, as the competition expands its women's programme across Ireland, Scotland, Wales, Italy, and South Africa.", tag: "Club · Europe", lawVariation: false, toc: ["Programme Structure","Club Participation","Player Eligibility","Competition Format","Disciplinary Regulations","Player Welfare","Development Pathway","Commercial Rights"], available: false },
+    ]
+  }
+];
+
+const genericToc = ["Laws of the Game","Playing Regulations","Competition Format","Player Eligibility","Disciplinary Code","Anti-Doping Policy","Match Officials","Player Welfare & Safety"];
+
+let allCards = [];
+
+function buildRulebooks(data) {
+  const container = document.getElementById('rbMain');
+  container.innerHTML = '';
+  allCards = [];
+
+  data.forEach(region => {
+    const section = document.createElement('div');
+    section.className = 'rb-region';
+
+    const header = document.createElement('div');
+    header.className = 'rb-region-header';
+    header.innerHTML = `
+      <span class="rb-region-flag">${region.flag}</span>
+      <span class="rb-region-name">${region.region}</span>
+      <span class="rb-region-count">${region.books.length} rulebook${region.books.length !== 1 ? 's' : ''}</span>
+    `;
+    section.appendChild(header);
+
+    if (region.note) {
+      const note = document.createElement('div');
+      note.className = 'rb-region-note';
+      note.textContent = region.note;
+      section.appendChild(note);
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'rb-grid';
+
+    region.books.forEach(book => {
+      const card = document.createElement('div');
+      card.className = 'rb-card';
+      card.dataset.search = (book.league + ' ' + book.name + ' ' + book.desc + ' ' + region.region + ' women').toLowerCase();
+      const tagClass = book.lawVariation ? 'variation' : 'soon';
+      const tagLabel = book.lawVariation ? '⚡ Law Variations' : 'Placeholder';
+      card.innerHTML = `
+        <div class="rb-card-league">${book.league}</div>
+        <div class="rb-card-name">${book.name}</div>
+        <div class="rb-card-desc">${book.desc}</div>
+        <div class="rb-card-footer">
+          <span class="rb-card-tag ${tagClass}">${tagLabel}</span>
+          <span class="rb-open-icon">→</span>
+        </div>
+      `;
+      card.onclick = () => openModal(book, region.region);
+      grid.appendChild(card);
+      allCards.push({ el: card, regionEl: section, region });
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+}
+
+function filterRulebooks(query) {
+  const q = query.toLowerCase().trim();
+  const container = document.getElementById('rbMain');
+
+  allCards.forEach(({ el }) => {
+    const match = !q || el.dataset.search.includes(q);
+    el.style.display = match ? '' : 'none';
+  });
+
+  // Hide empty regions
+  document.querySelectorAll('.rb-region').forEach(region => {
+    const visible = [...region.querySelectorAll('.rb-card')].some(c => c.style.display !== 'none');
+    region.style.display = visible ? '' : 'none';
+  });
+}
+
+function openModal(book, region) {
+  document.getElementById('modalLeagueTag').textContent = region + ' · ' + book.league;
+  document.getElementById('modalTitle').textContent = book.name;
+
+  const toc = book.toc || genericToc;
+  document.getElementById('modalToc').innerHTML = toc.map((item, i) => `
+    <div class="rb-toc-item">
+      <span><span class="rb-toc-num">${String(i + 1).padStart(2, '0')}</span>${item}</span>
+      <span class="rb-toc-placeholder">Placeholder</span>
+    </div>
+  `).join('');
+
+  // Swap banner based on whether this has law variations
+  const bodyEl = document.querySelector('.modal-body');
+  const existingBanners = bodyEl.querySelectorAll('.placeholder-banner, .variation-banner');
+  existingBanners.forEach(b => b.remove());
+
+  const banner = document.createElement('div');
+  if (book.lawVariation) {
+    banner.className = 'variation-banner';
+    banner.innerHTML = `<div class="vi">⚡</div><div class="vt"><strong>Law variations apply</strong> — This competition operates under World Rugby-approved law variations specific to the women's game. The core Laws of the Game remain the same; variations affect elements like scrum procedure and maul rules at certain competition levels. The full variation table will be embedded here when live.</div>`;
+  } else {
+    banner.className = 'placeholder-banner';
+    banner.innerHTML = `<div class="placeholder-icon">📋</div><div class="placeholder-text"><strong>Placeholder content</strong> — The full rulebook PDF for this league will be embedded here. When live, users will be able to read, search, and bookmark sections directly in-app.</div>`;
+  }
+  bodyEl.insertBefore(banner, bodyEl.querySelector('.rb-section-block'));
+
+  document.getElementById('modalBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalBackdrop')) {
+    document.getElementById('modalBackdrop').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal({}); });
+
+buildRulebooks(rulebookRegions);
+
+/* ══ POSITION TRAINER DATA ══ */
+const positions = [
+  { num:1, name:"Loosehead Prop", group:"Front Row", tagline:"The anchor of the scrum on the left side. Carries the set-piece.", roles:["Scrum stability","Ball carrying","Breakdown work","Lineout lifting"], tech:["Drive through hips, not shoulders — power comes from the legs.","Bind tight around the opponent's back; a loose bind leaks scrum pressure.","Stay square in the engagement — twisting gives the tighthead an angle to exploit.","In open play, run hard lines to create contact and recycle cleanly."], stats:[9,6,3,6,7,8], drills:[{name:"Sled Push Sequence",desc:"Drive a weighted sled 10m from a low, bound position — replicate scrum body angle. Reset and repeat.",sets:"4",dur:"30s on",focus:"Scrum drive"},{name:"Jackknife Carries",desc:"Ball in both hands, dip into contact with a pad-holder, offload or go to ground and protect.",sets:"3",dur:"6 reps",focus:"Contact body shape"}] },
+  { num:2, name:"Hooker", group:"Front Row", tagline:"The fulcrum of the scrum and the quarterback of the lineout. Every set piece runs through you.", roles:["Scrum hooking","Lineout throwing","Breakdown","Loose carry"], tech:["Hook the moment you feel the props engage — timing with the feed, not before.","Keep your spine neutral in the scrum; a dropped head collapses the whole unit.","Throw flat and fast to the front; loop it higher to the tail — read your jumper.","After the throw, sprint to the gain line — lineouts become attacking opportunities.","In the loose, arrive at rucks decisively: secure or clear, never hover."], stats:[9,6,5,7,9,10], drills:[{name:"Lineout Throw Ladder",desc:"Mark three targets on a wall or net at jumper heights. Throw 5 to each in sequence, focusing on spiral and release point.",sets:"4",dur:"15 throws",focus:"Throw accuracy"},{name:"Scrum Hook Timing",desc:"Set up against a scrum machine with one prop each side. On the SH feed signal, hook on call. Hold the drive for 3 seconds after.",sets:"6",dur:"1 engagement",focus:"Hook timing & drive"},{name:"Ruck Clear-Out Circuit",desc:"Hit pad, clear through, sprint 5m to next pad. Continuous loop for duration. Keep hips low.",sets:"3",dur:"45s",focus:"Breakdown aggression"}] },
+  { num:3, name:"Tighthead Prop", group:"Front Row", tagline:"The cornerstone. You're contested from both sides in the scrum — technique wins here.", roles:["Scrum dominance","Scrummaging duel","Breakdown","Short carries"], tech:["Bind over the loosehead's arm — your bind is your grip on the contest.","Drive in and slightly up; a prop who goes down concedes weight transfer.","Square hips to the tunnel — any angle gives away leverage.","Your chest is a platform: lock it, don't let the loosehead collapse through it."], stats:[10,5,2,5,6,8], drills:[{name:"Pop-Up Bind Hold",desc:"Partner applies a binding grip to your collar; hold position under resistance for 5s. Rotate sides.",sets:"5",dur:"5s hold",focus:"Bind & neck stability"},{name:"Single-Leg Scrum Stance",desc:"Hold full scrum crouch on one leg for 10s. Maintains proprioception and hip stability for binding position.",sets:"3",dur:"10s each leg",focus:"Stability & balance"}] },
+  { num:4, name:"Lock (Blindside)", group:"Locks", tagline:"Engine of the scrum. You provide the primary driving force and lineout jumping.", roles:["Scrum drive","Lineout jumping","Line breaking","Breakdown"], tech:["Bind low on the prop's shorts — high binding drops your hips and kills your drive.","Head between the props, driving forward through your legs — no daylight through the front.","In the lineout, time your jump to the throw's flight, not the call.","Carry with purpose — pick your channel and commit, don't look for the easy way."], stats:[8,7,4,6,8,9], drills:[{name:"Lineout Jump Timing",desc:"Have a partner throw to varying heights. Jump from standing to catch at each height, landing balanced.",sets:"4",dur:"8 jumps",focus:"Jump timing"},{name:"Scrum Machine Sustained Drive",desc:"Drive the machine continuously for 8 seconds, maintaining body position throughout.",sets:"5",dur:"8s drive",focus:"Sustained scrum power"}] },
+  { num:5, name:"Lock (Openside)", group:"Locks", tagline:"The ball-winning engine. Often the primary lineout jumper on the openside.", roles:["Lineout jumping","Scrum drive","Maul driving","Carries"], tech:["Communicate jumper preferences clearly with the hooker before each lineout.","Drive off both feet in the scrum — don't favour your stronger leg.","In mauls, stay connected and drive low; breaking grip kills the maul's momentum.","On carries, target the inside shoulder of the defender to create overlap."], stats:[8,7,4,6,8,9], drills:[{name:"Partner Lift Sequence",desc:"With two lifters, practice lift timing from signal to full extension. Focus on the jumper's core position at height.",sets:"5",dur:"3 lifts",focus:"Lineout lift sync"},{name:"Maul Drive Hold",desc:"Drive into a maul pad and maintain low, connected position for 5s under lateral pressure from a partner.",sets:"4",dur:"5s",focus:"Maul body position"}] },
+  { num:6, name:"Blindside Flanker", group:"Back Row", tagline:"The enforcer. Physicality, breakdown dominance, and defensive read.", roles:["Breakdown dominance","Defensive line","Carrying","Lineout support"], tech:["First to the breakdown — legally over the ball, driving the opposition back.","Read the carrier early to get your line of blitz right before impact.","Carry into contact with your legs driving — don't just fall into tackles.","Use your size to present a wide shield in the defensive line."], stats:[5,8,7,9,9,4], drills:[{name:"Blitz Line Reads",desc:"Start 5m from a dummy runner. On move, blitz at the correct angle to arrive on impact. Coach calls the ball carrier.",sets:"6",dur:"1 rep",focus:"Defensive read"},{name:"Jackknife to Ruck",desc:"Make contact with a pad, go to ground, place ball back, then immediately join the ruck and drive over.",sets:"4",dur:"6 reps",focus:"Breakdown speed"}] },
+  { num:7, name:"Openside Flanker", group:"Back Row", tagline:"The jackal. Turnover threat at every breakdown. Your engine never stops.", roles:["Turnover hunting","Breakdown pilfering","Defensive pressure","Support lines"], tech:["Arrive at the breakdown square-on and low — the referee sees your bind position.","Jackalling requires timing: arrive after the tackle but before the clear-out.","Stay on your feet as long as possible — you're useless on the ground.","In attack, run flat support lines 2m off the ball carrier to take the pass after contact."], stats:[4,7,8,9,10,3], drills:[{name:"Jackal Countdown",desc:"Partner carries and goes to ground. You arrive and contest legally. You have 3 seconds before a clear-out arrives — win or release.",sets:"8",dur:"1 contest",focus:"Jackal positioning"},{name:"Support Line Loops",desc:"Ball carrier runs a channel. You loop from 5m behind to arrive at their shoulder as contact is made.",sets:"3",dur:"8 reps",focus:"Support timing"}] },
+  { num:8, name:"Number 8", group:"Back Row", tagline:"Bridge between forwards and backs. Power carrier and set piece controller.", roles:["Pick & go","Scrum control","Ball at base","Defensive cover"], tech:["At the scrum base, control the ball with your feet before you pick — rushing it loses possession.","When picking from the base, accelerate through the gap immediately.","Read the scrum pressure — if props are moving, you adapt the back row shape.","In defence, cover the channel outside the scrum and communicate with the 9."], stats:[7,9,7,8,9,6], drills:[{name:"Scrum Base Pick-Up",desc:"From full scrum position at the machine, pick the ball from between your feet and accelerate into a pad 3m away.",sets:"6",dur:"1 rep",focus:"Pick & drive"},{name:"Back Row Defensive Channel",desc:"Three defenders set up: 6, 7, 8. Coach points a runner at a channel. All three communicate and fill correctly.",sets:"5",dur:"1 rep",focus:"Defensive shape"}] },
+  { num:9, name:"Scrum Half", group:"Halfbacks", tagline:"The link. Every phase starts with you. Decision speed is your superpower.", roles:["Pass service","Ruck management","Tactical kicking","Defensive organisation"], tech:["Pass off both hands equally — a one-handed SH gets read by defences fast.","Service from the ruck should be flat and fast — the fly half sets the line off your release.","Communicate breakdown status to forwards before it's won — 'secure', 'clean it', 'use it now'.","Your box kick is a weapon: hang time plus chase angle beats a poor clearance every time."], stats:[3,4,8,7,9,6], drills:[{name:"Both-Hands Pass Ladder",desc:"10 passes off the left, 10 off the right, to a partner moving along a line. Focus on flat trajectory and wrist snap.",sets:"3",dur:"20 passes",focus:"Bilateral passing"},{name:"Quick Ruck Service",desc:"Ball placed at a cone. You arrive, scan, and pass in under 2 seconds. Partner varies their starting position.",sets:"8",dur:"1 rep",focus:"Service speed"}] },
+  { num:10, name:"Fly Half", group:"Backs", tagline:"The conductor. Every attacking decision flows through your hands.", roles:["Attack organisation","Kicking","Defensive line speed","Set piece direction"], tech:["Set your line before you receive — your depth and angle signal the play to everyone.","On a wide pass, hold the ball a beat longer to pull the defence before releasing.","Kick from the hand cleanly — drop the ball, don't place it, and follow through your target.","In defence, call the blitz early and lead it — your position sets the whole backline."], stats:[2,5,7,7,8,7], drills:[{name:"Hold & Pass Reads",desc:"Two defensive cones set up. You hold until the last second and pass either side based on which cone your partner touches.",sets:"6",dur:"1 rep",focus:"Decision timing"},{name:"Box & Chase",desc:"Kick a box from the base, then sprint to apply pressure to a catching partner inside a 15m zone.",sets:"5",dur:"1 kick",focus:"Kicking & chase"}] },
+  { num:11, name:"Left Wing", group:"Backs", tagline:"Finisher on the wide edge. Speed, finishing, and aerial prowess.", roles:["Finishing","Aerial ball","Counter-attack","Defensive corner"], tech:["Attack the outside shoulder of a defender — inside cuts are closed down fast at winger.","In the air, attack the ball with both hands at the highest point.","On counter-attack from depth, fix two defenders before releasing a pass or stepping.","Defensive positioning: start wide and in — don't flatten too early or you get beaten outside."], stats:[1,5,10,5,6,2], drills:[{name:"Aerial Claim Drill",desc:"Partner kicks varying heights. You call 'mark' or contest. Catch at maximum height, land balanced, then accelerate.",sets:"6",dur:"1 kick",focus:"Aerial confidence"},{name:"Outside Shoulder Attack",desc:"Set up 1v1 against a stationary defender. Attack outside shoulder with a step or hip drop. Repeat off both feet.",sets:"5",dur:"3 reps",focus:"Finishing technique"}] },
+  { num:12, name:"Inside Centre", group:"Backs", tagline:"The crash ball and defensive linchpin. You play like a back row in a back's jersey.", roles:["Crash ball","Defensive rush","Line break","Offload"], tech:["Hit contact with your chest square — inside centres who turn in contact lose the gain line.","Offload in contact only when the support runner is clearly on your shoulder.","In defence, lead the line speed and communicate with 13 — your gap is their gap.","Vary your running line: not every carry is crash ball — a short arc creates a different problem."], stats:[2,8,7,9,8,2], drills:[{name:"Crash & Offload",desc:"Run a hard line into a double-pad holder. Absorb contact and offload to a trailing support runner in 3 steps or fewer.",sets:"5",dur:"3 reps",focus:"Offload in contact"},{name:"Blitz Defensive Shape",desc:"Set up 12–13 vs 2 attackers. 12 leads blitz, 13 covers. Coach varies the attack line.",sets:"6",dur:"1 rep",focus:"Defensive alignment"}] },
+  { num:13, name:"Outside Centre", group:"Backs", tagline:"Creator and finisher. Your passing game unlocks the wide channels.", roles:["Wide passing","Line breaks","Defensive cover","Kick receive"], tech:["Your pass to the wing should always give them outside the last defender — pass flat and ahead.","Attack the inside shoulder to create outside space, then give or go.","In defence, read the fly half's pass — don't follow the dummy, follow the ball.","Communication with your winger is essential: call the play before you receive."], stats:[1,6,8,7,7,2], drills:[{name:"Two-on-One Execution",desc:"You and a wing vs one defender. Execute the 2v1 cleanly — pass only when defender commits to you.",sets:"6",dur:"1 rep",focus:"2v1 decision"},{name:"Cross-Field Kick Receive",desc:"Partner kicks a cross-field ball to your outside. Catch in motion and finish past a cone.",sets:"5",dur:"1 rep",focus:"Ball in space"}] },
+  { num:14, name:"Right Wing", group:"Backs", tagline:"Try scorer. Pure acceleration, and brave in the air.", roles:["Finishing","Aerial ball","Counter-attack","Defensive depth"], tech:["Accelerate into a gap — don't wait for it to open, arrive as it does.","Your footwork near the touchline is your most important skill: step inside then back out.","Aerial work: call loudly and early to protect yourself and organise teammates.","On kick receive: catch, steady, then decide — don't rush the first touch."], stats:[1,5,10,5,6,2], drills:[{name:"Touchline Footwork",desc:"5m from a touchline, receive the ball and beat a cone with a step — staying in. Repeat from both sides.",sets:"6",dur:"3 reps",focus:"Boundary footwork"},{name:"Sprint Finish",desc:"Receive a flat pass at pace and sprint 20m to a try line with a chasing defender starting 3m behind.",sets:"5",dur:"1 rep",focus:"Acceleration & finish"}] },
+  { num:15, name:"Fullback", group:"Backs", tagline:"The last line. Organiser, attacker, and the team's kicking safety net.", roles:["Kick receive","Counter-attack","Attack depth","Defensive sweeper"], tech:["Position yourself to see the whole field — don't follow the ball, anticipate where it's going.","On a kick return, communicate with your wings: 'mine', 'yours', 'leave it'.","As a strike runner from depth, your angle should threaten the space outside the 10–12 channel.","Positional kicking: a good touch-finder relieves 30 metres of pressure instantly."], stats:[1,5,8,7,7,5], drills:[{name:"Catch & Counter",desc:"Partner kicks high ball. You call it, catch, and immediately counter-attack against two cones representing a defensive line.",sets:"5",dur:"1 rep",focus:"Catch & go"},{name:"Depth Running Line",desc:"From 20m back, receive a pass on a flat run and hit a gap between two cones at full speed.",sets:"6",dur:"1 rep",focus:"Strike runner angle"}] },
+];
+
+let currentPos = null;
+let currentDrillIdx = 0;
+
+const tabsEl = document.getElementById('posTabs');
+positions.forEach((p, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'pos-tab';
+  btn.textContent = `#${p.num}`;
+  btn.title = p.name;
+  btn.onclick = () => selectPos(i);
+  tabsEl.appendChild(btn);
+});
+
+function selectPos(idx) {
+  currentPos = idx;
+  currentDrillIdx = 0;
+  const p = positions[idx];
+  document.querySelectorAll('.pos-dot').forEach((el, i) => el.classList.toggle('active', i === idx));
+  document.querySelectorAll('.pos-tab').forEach((el, i) => el.classList.toggle('active', i === idx));
+  document.getElementById('posNum').textContent = p.num;
+  document.getElementById('posGroup').textContent = p.group;
+  document.getElementById('posName').textContent = p.name;
+  document.getElementById('posTagline').textContent = p.tagline;
+  document.getElementById('posRoles').innerHTML = p.roles.map(r => `<span class="role-pill">${r}</span>`).join('');
+  document.getElementById('posTech').innerHTML = p.tech.map(t => `<div class="technique-item">${t}</div>`).join('');
+  renderRadar(p.stats);
+  document.getElementById('posBody').style.display = 'flex';
+  document.getElementById('drillCard').style.display = 'block';
+  document.getElementById('timerCard').style.display = 'flex';
+  renderDrill();
+  timerReset();
+}
+
+function renderDrill() {
+  if (currentPos === null) return;
+  const d = positions[currentPos].drills[currentDrillIdx % positions[currentPos].drills.length];
+  document.getElementById('drillName').textContent = d.name;
+  document.getElementById('drillDesc').textContent = d.desc;
+  document.getElementById('drillSets').textContent = d.sets;
+  document.getElementById('drillDur').textContent = d.dur;
+  document.getElementById('drillFocus').textContent = d.focus;
+}
+
+function rotateDrill() { currentDrillIdx++; renderDrill(); }
+
+let timerInterval = null, timerSeconds = 90, timerRunning = false;
+
+function timerToggle() {
+  if (timerRunning) {
+    clearInterval(timerInterval); timerRunning = false;
+    document.getElementById('timerStartBtn').textContent = 'Resume';
+    document.getElementById('timerDisplay').classList.remove('running');
+    document.getElementById('timerLabel').textContent = 'Paused';
+  } else {
+    timerRunning = true;
+    document.getElementById('timerStartBtn').textContent = 'Pause';
+    document.getElementById('timerDisplay').classList.add('running');
+    document.getElementById('timerLabel').textContent = 'Running…';
+    timerInterval = setInterval(() => {
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval); timerRunning = false;
+        document.getElementById('timerStartBtn').textContent = 'Start';
+        document.getElementById('timerDisplay').classList.remove('running');
+        document.getElementById('timerLabel').textContent = '✓ Done';
+        document.getElementById('timerDisplay').textContent = '0:00';
+        return;
+      }
+      timerSeconds--;
+      const m = Math.floor(timerSeconds/60), s = timerSeconds%60;
+      document.getElementById('timerDisplay').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    }, 1000);
+  }
+}
+
+function timerReset() {
+  clearInterval(timerInterval); timerRunning = false; timerSeconds = 90;
+  document.getElementById('timerDisplay').textContent = '1:30';
+  document.getElementById('timerDisplay').classList.remove('running');
+  document.getElementById('timerStartBtn').textContent = 'Start';
+  document.getElementById('timerLabel').textContent = 'Ready';
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const RADAR_LABELS = ['Scrum', 'Carry', 'Speed', 'Defense', 'Work Rate', 'Set Piece'];
+let radarChart = null;
+
+function renderRadar(stats) {
+  const canvas = document.getElementById('radarChart');
+  if (!canvas) return;
+
+  if (radarChart) {
+    radarChart.data.datasets[0].data = stats;
+    radarChart.update('active');
+    return;
+  }
+
+  radarChart = new Chart(canvas, {
+    type: 'radar',
+    data: {
+      labels: RADAR_LABELS,
+      datasets: [{
+        data: stats,
+        backgroundColor: 'rgba(230, 57, 70, 0.15)',
+        borderColor: '#E63946',
+        borderWidth: 2,
+        pointBackgroundColor: '#E63946',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 5,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      animation: { duration: 350, easing: 'easeInOutQuart' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#111827',
+          titleColor: '#F9FAFB',
+          bodyColor: '#D1D5DB',
+          padding: 10,
+          cornerRadius: 6,
+          callbacks: {
+            label: ctx => `${ctx.label}: ${ctx.raw}/10`
+          }
+        }
+      },
+      scales: {
+        r: {
+          min: 0,
+          max: 10,
+          ticks: {
+            stepSize: 2,
+            display: false
+          },
+          grid: {
+            color: '#E5E7EB',
+            lineWidth: 1
+          },
+          angleLines: {
+            color: '#E5E7EB',
+            lineWidth: 1
+          },
+          pointLabels: {
+            font: {
+              family: "'Barlow Condensed', sans-serif",
+              size: 11,
+              weight: '700'
+            },
+            color: '#6B7280'
+          }
+        }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
