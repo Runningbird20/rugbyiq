@@ -107,7 +107,7 @@ export default function TrainerPage() {
               </div>
             </div>
             {pos && (
-              <div className="pos-body">
+              <div key={selectedPos} className="pos-body">
                 <div>
                   <div className="section-label">Key Responsibilities</div>
                   <div className="role-pills">
