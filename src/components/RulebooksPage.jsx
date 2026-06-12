@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { rulebookRegions, genericToc } from '../data/rulebooks'
+import { formatLawContent } from '../utils/lawFormatter'
 
 function RulebookCard({ book, region, onOpen }) {
   const tagClass = book.available ? 'available' : book.lawVariation ? 'variation' : 'soon'
@@ -36,9 +37,39 @@ function LawViewer({ laws }) {
         </div>
         <div className="law-content">
           {law.content
-            ? law.content.split('\n\n').map((para, i) => (
-                <p key={i}>{para.trim()}</p>
-              ))
+            ? formatLawContent(law.content).map((item, i) => {
+                if (item.type === 'heading') {
+                  return <div key={i} className="law-section-heading">{item.text}</div>
+                }
+                if (item.type === 'numbered') {
+                  return (
+                    <div key={i} className="law-numbered">
+                      <span className="law-label">{item.label}</span>
+                      <span>{item.text}</span>
+                    </div>
+                  )
+                }
+                if (item.type === 'alpha') {
+                  return (
+                    <div key={i} className="law-alpha">
+                      <span className="law-label">{item.label}</span>
+                      <span>{item.text}</span>
+                    </div>
+                  )
+                }
+                if (item.type === 'roman') {
+                  return (
+                    <div key={i} className="law-roman">
+                      <span className="law-label">{item.label}</span>
+                      <span>{item.text}</span>
+                    </div>
+                  )
+                }
+                if (item.type === 'sanction') {
+                  return <div key={i} className="law-sanction">{item.text}</div>
+                }
+                return <p key={i} className="law-para">{item.text}</p>
+              })
             : <p className="law-empty">Content not available for this section.</p>
           }
         </div>

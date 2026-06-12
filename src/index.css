@@ -497,18 +497,16 @@ svg.pitch { width: 100%; display: block; cursor: default; }
   padding: 1rem 0;
   text-align: center;
 }
+
+/* TOC */
 .law-viewer { display: flex; flex-direction: column; gap: 1rem; }
 .law-toc-intro {
   font-size: 0.82rem;
   color: var(--ink-soft);
   line-height: 1.5;
-  padding: 0.5rem 0;
+  padding: 0.25rem 0;
 }
-.law-toc-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
+.law-toc-grid { display: flex; flex-direction: column; gap: 0.3rem; }
 .law-toc-btn {
   display: flex;
   align-items: baseline;
@@ -532,11 +530,9 @@ svg.pitch { width: 100%; display: block; cursor: default; }
   white-space: nowrap;
   min-width: 3.5rem;
 }
-.law-toc-title {
-  font-size: 0.875rem;
-  color: var(--ink);
-  font-weight: 500;
-}
+.law-toc-title { font-size: 0.875rem; color: var(--ink); font-weight: 500; }
+
+/* Back button */
 .law-back-btn {
   background: none;
   border: none;
@@ -550,6 +546,8 @@ svg.pitch { width: 100%; display: block; cursor: default; }
   align-self: flex-start;
 }
 .law-back-btn:hover { opacity: 0.7; }
+
+/* Law heading */
 .law-heading {
   display: flex;
   align-items: baseline;
@@ -577,15 +575,105 @@ svg.pitch { width: 100%; display: block; cursor: default; }
   letter-spacing: 0.03em;
   color: var(--ink);
 }
-.law-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+
+/* Law body content */
+.law-content { display: flex; flex-direction: column; gap: 0.55rem; }
+
+/* Section headings within a law (ALL CAPS) */
+.law-section-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 0.75rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--line);
 }
-.law-content p {
+
+/* Level 1: numbered items (1. 2. 3.) */
+.law-numbered {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
   font-size: 0.875rem;
+  line-height: 1.65;
   color: var(--ink-mid);
-  line-height: 1.7;
+}
+.law-numbered .law-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--red);
+  min-width: 1.75rem;
+  text-align: right;
+  flex-shrink: 0;
+  padding-top: 0.06rem;
+}
+
+/* Level 2: letter sub-bullets (a. b. c.) */
+.law-alpha {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  font-size: 0.855rem;
+  line-height: 1.65;
+  color: var(--ink-mid);
+  padding-left: 2.5rem;
+}
+.law-alpha .law-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  min-width: 1.25rem;
+  text-align: right;
+  flex-shrink: 0;
+  padding-top: 0.06rem;
+}
+
+/* Level 3: roman numeral sub-sub-bullets (i. ii. iii.) */
+.law-roman {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  font-size: 0.84rem;
+  line-height: 1.65;
+  color: var(--ink-mid);
+  padding-left: 4.5rem;
+}
+.law-roman .law-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  min-width: 1.5rem;
+  text-align: right;
+  flex-shrink: 0;
+  padding-top: 0.08rem;
+  font-style: italic;
+}
+
+/* Sanction line */
+.law-sanction {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: #fef2f2;
+  border-left: 3px solid #fca5a5;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0 4px 4px 0;
+  margin-left: 2.5rem;
+  line-height: 1.5;
+}
+
+/* Loose paragraph (diagrams captions, notes) */
+.law-para {
+  font-size: 0.855rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  font-style: italic;
 }
 .law-empty { color: var(--ink-soft); font-style: italic; }
 
